@@ -1,24 +1,25 @@
 import WebsiteHeader from "@/components/ui/WebsiteHeader";
 import { WebsiteType } from "@/types/Website";
+import fs from "fs";
+import path from "path";
 
 export async function getStaticPaths() {
-  const websites = await fetch("http://localhost:3000/websites.json").then(
-    (res) => res.json(),
+  const websites: WebsiteType[] = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "public", "websites.json"), "utf-8")
   );
-  const paths = websites.map((w: WebsiteType) => ({
+  const paths = websites.map((w) => ({
     params: { slug: w.slug },
   }));
-  return { paths, fallback: true };
+  return { paths, fallback: false };
 }
 
 export async function getStaticProps({ params }: { params: { slug: string } }) {
   const { slug } = params;
-  const websites = await fetch("http://localhost:3000/websites.json").then(
-    (res) => res.json(),
+  const websites: WebsiteType[] = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "public", "websites.json"), "utf-8")
   );
-  const currentWebsite = websites.find((w: WebsiteType) => w.slug == slug);
-  console.log("currentWebsite: ", currentWebsite);
-  if (!currentWebsite) return { redirect: { destination: "/websites" } };
+  const currentWebsite = websites.find((w) => w.slug === slug);
+  if (!currentWebsite) return { notFound: true };
 
   return { props: { website: currentWebsite } };
 }

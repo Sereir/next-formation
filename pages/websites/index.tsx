@@ -2,10 +2,12 @@ import { Button } from "@/components/ui/Button";
 import Title from "@/components/ui/Title";
 import Website from "@/components/ui/Website";
 import { WebsiteType } from "@/types/Website";
+import fs from "fs";
+import path from "path";
 
 export async function getStaticProps() {
-  const websites = await fetch("http://localhost:3000/websites.json").then(
-    (res) => res.json(),
+  const websites = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "public", "websites.json"), "utf-8")
   );
   return { props: { websites } };
 }
